@@ -2,5 +2,33 @@
 
 use strict;
 use warnings;
+use Data::Dumper;
 
-print "hello world\n";
+#print "hello world\n";
+#print Dumper( letter_count('hello') );
+my %linux_words; # letter counts from Linux
+read_dict_words();
+
+sub read_dict_words {
+	my $dict = '/usr/share/dict/words';
+
+	open(my $words, '<', $dict) or die "open($dict): $!";
+
+	while (my $word = <$words>) {
+		chomp($word);
+		$linux_words{$words} = letter_count($word);
+	}
+
+	close($words) or die "close($dict): $!";
+}
+
+sub letter_count {
+	my ($string) = @_;
+
+	my %counts;
+	foreach my $char ( split //, $string ) {
+		$counts{$char}++;
+	}
+
+	return \%counts;
+}
