@@ -3,11 +3,52 @@
 use strict;
 use warnings;
 use Data::Dumper;
+use IO::Prompt;
 
 #print "hello world\n";
 #print Dumper( letter_count('hello') );
 my %linux_words; # letter counts from Linux
 read_dict_words();
+my $linux_count = scalar keys %linux_words;
+print "got $linux_count words from Linux\n";
+
+my $letter_count = 0;
+while( $letter_count == 0 ) {
+	my $got = prompt "number of letters in word: ";
+	print "You said '$got'\n";
+	if ($got =~ /^\d+$/) {
+		$letter_count = $got;
+	} else {
+		warn "'$got' is not a number"
+	}
+}
+
+my $letters_available = prompt "cookie letters: ";
+my $available_count = letter_count($letters_available);
+seek_words(\%linux_words,$available_count,$letter_count);
+
+sub seek_words {
+	my ($dict,$avail,$size) = @_;
+
+	WORD: foreach my $word (keys %$dict) {
+		# only check words that are the right length
+		next unless length($word) == $size;
+		my $checking = $dict->{$word};
+
+		# do we have enough letters to make the word?
+		foreach my $letter (keys %$checking) {
+			if (!defined($avail->{$letter})
+				or $avail->{$letter} < $checking->{$letter}
+			) {
+				# it doesn't work
+				next WORD;
+			}
+		}
+
+		print "$word should work\n";
+	}
+}
+
 
 sub read_dict_words {
 	my $dict = '/usr/share/dict/words';
@@ -16,7 +57,7 @@ sub read_dict_words {
 
 	while (my $word = <$words>) {
 		chomp($word);
-		$linux_words{$words} = letter_count($word);
+		$linux_words{$word} = letter_count($word);
 	}
 
 	close($words) or die "close($dict): $!";
