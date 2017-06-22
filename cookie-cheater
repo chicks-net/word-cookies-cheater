@@ -15,7 +15,6 @@ print "got $linux_count words from Linux\n";
 my $letter_count = 0;
 while( $letter_count == 0 ) {
 	my $got = prompt "number of letters in word: ";
-	print "You said '$got'\n";
 	if ($got =~ /^\d+$/) {
 		$letter_count = $got;
 	} else {
@@ -33,6 +32,7 @@ sub seek_words {
 	WORD: foreach my $word (keys %$dict) {
 		# only check words that are the right length
 		next unless length($word) == $size;
+
 		my $checking = $dict->{$word};
 
 		# do we have enough letters to make the word?
