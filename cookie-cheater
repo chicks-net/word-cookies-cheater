@@ -29,6 +29,7 @@ seek_words(\%linux_words,$available_count,$letter_count);
 sub seek_words {
 	my ($dict,$avail,$size) = @_;
 
+	my @found_words;
 	WORD: foreach my $word (keys %$dict) {
 		# only check words that are the right length
 		next unless length($word) == $size;
@@ -45,7 +46,18 @@ sub seek_words {
 			}
 		}
 
-		print "$word should work\n";
+		push(@found_words,$word);
+	}
+
+	if (scalar @found_words) {
+		my $c = scalar @found_words;
+		print "\n";
+		print "$c words matched:\n";
+		foreach my $word (sort @found_words) {
+			print "- $word\n";
+		}
+	} else {
+		print "NO words found! :(\n";
 	}
 }
 
