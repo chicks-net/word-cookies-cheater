@@ -15,7 +15,7 @@ print "got $linux_count words from Linux\n";
 my $letter_count = 0;
 while( $letter_count == 0 ) {
 	my $got = prompt "number of letters in word: ";
-	if ($got =~ /^\d+$/) {
+	if ($got =~ /^\d+$/ or $got =~ /^\d+-\d+/) {
 		$letter_count = $got;
 	} else {
 		warn "'$got' is not a number"
@@ -29,10 +29,21 @@ seek_words(\%linux_words,$available_count,$letter_count);
 sub seek_words {
 	my ($dict,$avail,$size) = @_;
 
-	my @found_words;
+	my($min,$max);
+	if ($size =~ /(\d+)-(\d+)/) {
+		$min = $1;
+		$max = $2;
+	} else {
+		$min = $size;
+		$max = $size;
+	}
+
+	my %found_words;
 	WORD: foreach my $word (keys %$dict) {
 		# only check words that are the right length
-		next unless length($word) == $size;
+		my $len = length($word);
+		next unless $len >= $min;
+		next unless $len <= $max;
 
 		my $checking = $dict->{$word};
 
@@ -46,15 +57,17 @@ sub seek_words {
 			}
 		}
 
-		push(@found_words,$word);
+		push(@{$found_words{$len}}, $word);
 	}
 
-	if (scalar @found_words) {
-		my $c = scalar @found_words;
-		print "\n";
-		print "$c words matched:\n";
-		foreach my $word (sort @found_words) {
-			print "- $word\n";
+	if (scalar keys %found_words) {
+		foreach my $len (sort {$a<=>$b} keys %found_words) {
+			my $c = scalar @{$found_words{$len}};
+			print "\n";
+			print "$c words of $len characters matched:\n";
+			foreach my $word (sort @{$found_words{$len}}) {
+				print "- $word\n";
+			}
 		}
 	} else {
 		print "NO words found! :(\n";
