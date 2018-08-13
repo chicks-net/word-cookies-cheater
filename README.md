@@ -1,5 +1,8 @@
 # Word Cookies Cheater
 
+[![Open Source Love png2](https://badges.frapsoft.com/os/v2/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badges/)
+[![forthebadge cc-by](http://ForTheBadge.com/images/badges/cc-by.svg)](https://creativecommons.org/licenses/by/4.0)
+
 Cheat at Word Cookies by finding words in the Linux words file
 
 ## usage
